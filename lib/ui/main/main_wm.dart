@@ -1,4 +1,5 @@
 import 'package:code_generator_app/objects/code_generator.dart';
+import 'package:code_generator_app/objects/saved_json.dart';
 import 'package:code_generator_app/ui/main/main_model.dart';
 import 'package:code_generator_app/ui/main/main_screen.dart';
 import 'package:code_generator_app/ui/theme/app_colors.dart';
@@ -36,6 +37,8 @@ abstract interface class IMainScreenWidgetModel implements IWidgetModel {
   void onSaveCheckTap();
 
   void onGuideTap();
+
+  ValueNotifier<SavedJSon> get savedPasswords;
 }
 
 MainScreenWidgetModel defaultMainScreenWidgetModelFactory(
@@ -76,6 +79,11 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
       _keyController.text,
       _loginController.text,
     );
+
+    if (doSave.value) {
+      _savedPasswords.value.add(_keyController.text, _wordController.text);
+      print(_savedPasswords.value);
+    }
   }
 
   @override
@@ -112,18 +120,25 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
   ValueNotifier<bool> get isKeyObscured => _isKeyObscured;
 
   @override
-  void onDrawerTap(BuildContext context) => Scaffold.of(context).openEndDrawer();
+  void onDrawerTap(BuildContext context) {
+    Scaffold.of(context).openEndDrawer();
+  }
 
   final _doSave = ValueNotifier<bool>(false);
 
   @override
   ValueNotifier<bool> get doSave => _doSave;
-  
+
   @override
   void onSaveCheckTap() => _doSave.value = !_doSave.value;
-  
+
   @override
   void onGuideTap() {
     // TODO: implement onGuideTap
   }
+
+  final _savedPasswords = ValueNotifier<SavedJSon>(SavedJSon());
+
+  @override
+  ValueNotifier<SavedJSon> get savedPasswords => _savedPasswords;
 }
