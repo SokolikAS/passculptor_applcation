@@ -30,6 +30,12 @@ abstract interface class IMainScreenWidgetModel implements IWidgetModel {
   void onDrawerTap(BuildContext context);
 
   BuildContext get context;
+
+  ValueNotifier<bool> get doSave;
+
+  void onSaveCheckTap();
+
+  void onGuideTap();
 }
 
 MainScreenWidgetModel defaultMainScreenWidgetModelFactory(
@@ -107,4 +113,17 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
 
   @override
   void onDrawerTap(BuildContext context) => Scaffold.of(context).openEndDrawer();
+
+  final _doSave = ValueNotifier<bool>(false);
+
+  @override
+  ValueNotifier<bool> get doSave => _doSave;
+  
+  @override
+  void onSaveCheckTap() => _doSave.value = !_doSave.value;
+  
+  @override
+  void onGuideTap() {
+    // TODO: implement onGuideTap
+  }
 }

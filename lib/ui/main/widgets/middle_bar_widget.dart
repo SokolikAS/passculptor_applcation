@@ -4,7 +4,14 @@ import 'package:flutter/material.dart';
 class MiddleBarWidget extends StatelessWidget {
   const MiddleBarWidget({
     super.key,
+    required this.onSaveCheckTap,
+    required this.onGuideTap,
+    required this.doSave,
   });
+
+  final ValueNotifier<bool> doSave;
+  final VoidCallback onSaveCheckTap;
+  final VoidCallback onGuideTap;
 
   @override
   Widget build(BuildContext context) {
@@ -12,23 +19,36 @@ class MiddleBarWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         TextButton(
-          onPressed: () => {},
-          child: const Row(
+          onPressed: () => onSaveCheckTap(),
+          child: Row(
             children: [
-              Icon(Icons.check_box_outline_blank_rounded),
-              SizedBox(width: 8),
-              Text(
-                'Сохранять',
-                style: TextStyle(
-                  color: AppColors.grayColor,
-                  fontWeight: FontWeight.w500,
+              //TODO Заменить чекер на свой виджет, сделать все элегантнее
+              ValueListenableBuilder(
+                valueListenable: doSave,
+                builder: (_, doSave, __) => SizedBox.square(
+                  dimension: 24,
+                  child: Checkbox(
+                    value: doSave,
+                    onChanged: (_) => onSaveCheckTap(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ValueListenableBuilder(
+                valueListenable: doSave,
+                builder: (_, doSave, __) => Text(
+                  'Сохранять',
+                  style: TextStyle(
+                    color: doSave ? AppColors.white : AppColors.grayColor,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
           ),
         ),
         TextButton(
-          onPressed: () => {},
+          onPressed: () => onGuideTap(),
           child: const Text(
             'Как это работает?',
           ),

@@ -96,6 +96,10 @@ class AppTheme {
     drawerTheme: const DrawerThemeData(
       backgroundColor: AppColors.backgroundColor,
     ),
+    /*
+        CHECKBOX
+    */
+    checkboxTheme: const CheckboxThemeData(),
   );
 }
 

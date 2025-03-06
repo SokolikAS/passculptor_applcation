@@ -52,7 +52,11 @@ class MainScreen extends ElementaryWidget<IMainScreenWidgetModel> {
                   onObscureKeyTap: () => wm.onObscureKeyTap(),
                 ),
                 const SizedBox(height: 5),
-                MiddleBarWidget(),
+                MiddleBarWidget(
+                  doSave: wm.doSave,
+                  onSaveCheckTap: () => wm.onSaveCheckTap(),
+                  onGuideTap: () => wm.onGuideTap(),
+                ),
                 const SizedBox(height: 5),
                 PasswordField(
                   result: wm.result,
