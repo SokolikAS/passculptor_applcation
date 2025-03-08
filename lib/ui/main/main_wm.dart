@@ -1,13 +1,12 @@
-import 'dart:io';
 import 'package:code_generator_app/objects/code_generator.dart';
 import 'package:code_generator_app/objects/saved_json.dart';
 import 'package:code_generator_app/ui/main/main_model.dart';
 import 'package:code_generator_app/ui/main/main_screen.dart';
 import 'package:code_generator_app/ui/theme/app_colors.dart';
 import 'package:elementary/elementary.dart';
+import 'package:elementary_helper/elementary_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 
 abstract interface class IMainScreenWidgetModel implements IWidgetModel {
   TextEditingController get wordController;
@@ -40,7 +39,8 @@ abstract interface class IMainScreenWidgetModel implements IWidgetModel {
 
   void onGuideTap();
 
-  SavedJSon get savedPasswords;
+  ValueNotifier<EntityState<Map<String, Set<String>>>>
+      get savedWebsitesListenable;
 
   void onDrawerChanged(bool isDrawerOpened);
 }
@@ -85,10 +85,11 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
     );
 
     if (doSave.value) {
-      savedPasswords.write(
+      _jsonWebsites.write(
         _keyController.text,
         _wordController.text,
       );
+      _needsUpdateDrawer = true;
     }
   }
 
@@ -143,17 +144,30 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
     // TODO: implement onGuideTap
   }
 
-  @override
-  void onDrawerChanged(bool isDrawerOpened) {
-    if (isDrawerOpened) loadPasswords();
-  }
-
-  Future<void> loadPasswords() async {
-    
-  }
-
-  final _savedPasswords = const SavedJSon('saved_passwords');
+  bool _needsUpdateDrawer = false;
 
   @override
-  SavedJSon get savedPasswords => _savedPasswords;
+  Future<void> onDrawerChanged(bool isDrawerOpened) async {
+    if (isDrawerOpened && _needsUpdateDrawer) await _initDrawer();
+  }
+
+  Future<void> _initDrawer() async {
+    _savedWebsitesEntity.loading();
+    await Future.delayed(const Duration(seconds: 2));
+
+    try {
+      _savedWebsitesEntity.content(await _jsonWebsites.jsonMap);
+      _needsUpdateDrawer = false;
+    } on Exception {
+      _savedWebsitesEntity.error();
+    }
+  }
+
+  final _jsonWebsites = const SavedJSon('saved_passwords');
+
+  final _savedWebsitesEntity = EntityStateNotifier<Map<String, Set<String>>>();
+
+  @override
+  ValueNotifier<EntityState<Map<String, Set<String>>>>
+      get savedWebsitesListenable => _savedWebsitesEntity;
 }

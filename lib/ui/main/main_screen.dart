@@ -77,8 +77,11 @@ class MainScreen extends ElementaryWidget<IMainScreenWidgetModel> {
         ),
       ),
       drawerEdgeDragWidth: MediaQuery.of(wm.context).size.width,
-      onEndDrawerChanged: (isDrawerOpened) => wm.onDrawerChanged(isDrawerOpened),
-      endDrawer: DirectoryDrawerWidget(),
+      onEndDrawerChanged: (isDrawerOpened) =>
+          wm.onDrawerChanged(isDrawerOpened),
+      endDrawer: DirectoryDrawerWidget(
+        listenableEntityState: wm.savedWebsitesListenable,
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: Builder(
         builder: (context) {

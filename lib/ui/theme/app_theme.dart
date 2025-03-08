@@ -97,9 +97,12 @@ class AppTheme {
       backgroundColor: AppColors.appBarColor,
     ),
     /*
-        CHECKBOX
+        PROGRESS INDICATOR
     */
-    checkboxTheme: const CheckboxThemeData(),
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      circularTrackColor: AppColors.backgroundColor,
+      color: AppColors.primaryColor,
+    )
   );
 }
 
