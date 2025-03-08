@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class DirectoryWidget extends StatelessWidget {
-  const DirectoryWidget({
+class DirectoryDrawerWidget extends StatelessWidget {
+  const DirectoryDrawerWidget({
     super.key,
   });
 

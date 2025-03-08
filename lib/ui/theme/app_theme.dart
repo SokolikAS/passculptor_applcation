@@ -94,7 +94,7 @@ class AppTheme {
         DRAWER
     */
     drawerTheme: const DrawerThemeData(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColors.appBarColor,
     ),
     /*
         CHECKBOX

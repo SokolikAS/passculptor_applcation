@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:code_generator_app/objects/code_generator.dart';
 import 'package:code_generator_app/objects/saved_json.dart';
 import 'package:code_generator_app/ui/main/main_model.dart';
@@ -6,6 +7,7 @@ import 'package:code_generator_app/ui/theme/app_colors.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 abstract interface class IMainScreenWidgetModel implements IWidgetModel {
   TextEditingController get wordController;
@@ -38,7 +40,9 @@ abstract interface class IMainScreenWidgetModel implements IWidgetModel {
 
   void onGuideTap();
 
-  ValueNotifier<SavedJSon> get savedPasswords;
+  SavedJSon get savedPasswords;
+
+  void onDrawerChanged(bool isDrawerOpened);
 }
 
 MainScreenWidgetModel defaultMainScreenWidgetModelFactory(
@@ -81,8 +85,10 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
     );
 
     if (doSave.value) {
-      _savedPasswords.value.add(_keyController.text, _wordController.text);
-      print(_savedPasswords.value);
+      savedPasswords.write(
+        _keyController.text,
+        _wordController.text,
+      );
     }
   }
 
@@ -137,8 +143,17 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
     // TODO: implement onGuideTap
   }
 
-  final _savedPasswords = ValueNotifier<SavedJSon>(SavedJSon());
+  @override
+  void onDrawerChanged(bool isDrawerOpened) {
+    if (isDrawerOpened) loadPasswords();
+  }
+
+  Future<void> loadPasswords() async {
+    
+  }
+
+  final _savedPasswords = const SavedJSon('saved_passwords');
 
   @override
-  ValueNotifier<SavedJSon> get savedPasswords => _savedPasswords;
+  SavedJSon get savedPasswords => _savedPasswords;
 }
