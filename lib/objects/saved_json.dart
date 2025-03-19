@@ -3,15 +3,21 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class SavedJSon {
-  SavedJSon({
-    required this.file,
-    required this.jsonMap,
-    this.isUpdated = false,
-  });
+  SavedJSon({required this.file});
 
   final File file;
-  final Map<String, Set<String>> jsonMap;
-  bool isUpdated;
+  Map<String, Set<String>>? _jsonMap;
+
+  Map<String, Set<String>> get jsonMap {
+    if (_jsonMap == null) {
+      // Создание мапы.
+      final String jsonString = file.readAsStringSync();
+      _jsonMap = _correctMap(jsonDecode(jsonString));
+    }
+    return _jsonMap!;
+  }
+
+  set jsonMap(Map<String, Set<String>> newMap) => _jsonMap = newMap;
 
   // Фабричный конструктор.
   static Future<SavedJSon> create(String fileName) async {
@@ -19,25 +25,18 @@ class SavedJSon {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$fileName.json');
 
-    // Создание мапы.
     if (!file.existsSync()) file.writeAsStringSync(jsonEncode({}));
 
-    final String jsonString = file.readAsStringSync();
-    final jsonMap = _correctMap(jsonDecode(jsonString));
-
-    return SavedJSon(
-      file: file,
-      jsonMap: jsonMap,
-    );
+    return SavedJSon(file: file);
   }
 
   Future<void> addPairToJson(String key, String word) async {
-    final Map<String, Set<String>> jsonMap = this.jsonMap;
     _addToMap(key, word, jsonMap);
 
     Map<String, List<dynamic>> serializebleMap = jsonMap.map(
       (key, value) => MapEntry(key, value.toList()),
     );
+
     await file.writeAsString(jsonEncode(serializebleMap));
   }
 
@@ -57,9 +56,8 @@ class SavedJSon {
   static void _addToMap(String key, String word, Map<String, dynamic> map) {
     key = _maskString(key);
 
-    if (!map.keys.contains(key)) {
-      map[key] = <String>{};
-    }
+    if (!map.keys.contains(key)) map[key] = <String>{};
+
     map[key]!.add(word);
   }
 

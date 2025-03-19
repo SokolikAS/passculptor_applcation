@@ -77,6 +77,13 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
   ValueNotifier<String> get result => _result;
 
   @override
+  Future<void> initWidgetModel() async {
+    _jsonWebsites = await SavedJSon.create('saved_passwords');
+
+    super.initWidgetModel();
+  }
+
+  @override
   Future<void> onEnterTap() async {
     result.value = CodeGenerator.generate(
       _wordController.text,
@@ -85,11 +92,12 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
     );
 
     if (doSave.value) {
-      (await _jsonWebsites).addPairToJson(
+      _jsonWebsites.addPairToJson(
         _keyController.text,
         _wordController.text,
       );
-      _needsUpdateDrawer = true;
+
+      needsDrawerUpdate = true;
     }
   }
 
@@ -144,11 +152,9 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
     // TODO: implement onGuideTap
   }
 
-  bool _needsUpdateDrawer = true;
-
   @override
   Future<void> onDrawerChanged(bool isDrawerOpened) async {
-    if (isDrawerOpened && _needsUpdateDrawer) {
+    if (isDrawerOpened && needsDrawerUpdate) {
       await _initDrawer();
     }
   }
@@ -158,14 +164,17 @@ class MainScreenWidgetModel extends WidgetModel<MainScreen, IMainScreenModel>
     await Future.delayed(const Duration(seconds: 2));
 
     try {
-      _savedWebsitesEntity.content((await _jsonWebsites).jsonMap);
-      _needsUpdateDrawer = false;
+      _savedWebsitesEntity.content(_jsonWebsites.jsonMap);
     } on Exception {
       _savedWebsitesEntity.error();
     }
+
+    needsDrawerUpdate = false;
   }
 
-  final _jsonWebsites = SavedJSon.create('saved_passwords');
+  late final SavedJSon _jsonWebsites;
+
+  bool needsDrawerUpdate = true;
 
   final _savedWebsitesEntity = EntityStateNotifier<Map<String, Set<String>>>();
 
